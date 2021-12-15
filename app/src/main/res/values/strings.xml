@@ -1,6 +1,11 @@
 <resources>
     <string name="app_name">TrackerApp</string>
     <string name="error_message">Oops! Something went wrong</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="track_screen_start_btn">Start</string>
+    <string name="track_screen_stop_btn">Stop</string>
+    <string name="track_screen_speed_label">Speed: </string>
+    <string name="track_screen_speed_unit">m/s</string>
+    <string name="track_screen_distance_label">Distance: </string>
+    <string name="track_screen_distance_unit">m</string>
+
 </resources>
