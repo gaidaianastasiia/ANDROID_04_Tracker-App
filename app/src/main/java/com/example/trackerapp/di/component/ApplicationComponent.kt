@@ -1,10 +1,7 @@
 package com.example.trackerapp.di.component
 
 import com.example.trackerapp.Application
-import com.example.trackerapp.di.module.ActivityModule
-import com.example.trackerapp.di.module.ApplicationModule
-import com.example.trackerapp.di.module.FragmentModule
-import com.example.trackerapp.di.module.ViewModelFactoryModule
+import com.example.trackerapp.di.module.*
 import dagger.Component
 import dagger.android.AndroidInjector
 import dagger.android.support.AndroidSupportInjectionModule
@@ -15,7 +12,10 @@ import javax.inject.Singleton
     ApplicationModule::class,
     ActivityModule::class,
     FragmentModule::class,
-    ViewModelFactoryModule::class
+    ServiceModule::class,
+    ViewModelFactoryModule::class,
+    StorageModule::class,
+    RepositoryModule::class
 ])
 @Singleton
 interface ApplicationComponent : AndroidInjector<Application> {

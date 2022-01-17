@@ -7,5 +7,12 @@
     <string name="track_screen_speed_unit">m/s</string>
     <string name="track_screen_distance_label">Distance: </string>
     <string name="track_screen_distance_unit">m</string>
-
+    <string name="track_screen_default_speed_value">0.0</string>
+    <string name="track_screen_default_distance_value">0.0</string>
+    <string name="track_screen_start_tracker_button_text">Start</string>
+    <string name="track_screen_stop_tracker_button_text">Stop</string>
+    <string name="permission_rationale">Location permission is needed for core functionality</string>
+    <string name="permission_denied_explanation">Permission was denied, but is needed for core
+        functionality.</string>
+    <string name="ok">OK</string>
 </resources>

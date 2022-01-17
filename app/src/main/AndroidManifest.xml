@@ -2,6 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.trackerapp">
 
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+
+
     <application
         android:name=".Application"
         android:allowBackup="true"
@@ -10,7 +16,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.TrackerApp">
-        <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyAMMkUGBBFR_SDemiKK2GfCjqwlfcMpsDc"/>
+        <service
+            android:name=".presentation.fragment.tracker.LocationService"
+            android:enabled="true"
+            android:foregroundServiceType="location"
+            android:exported="true"/>
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAMMkUGBBFR_SDemiKK2GfCjqwlfcMpsDc" />
+
         <activity
             android:name=".presentation.activity.MainActivity"
             android:exported="true">

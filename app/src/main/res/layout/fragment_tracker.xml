@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/trackerFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".presentation.fragment.tracker.TrackerFragment">
@@ -73,7 +74,7 @@
         app:layout_constraintBaseline_toBaselineOf="@id/speedLabelTextView"
         app:layout_constraintStart_toEndOf="@id/speedLabelTextView"
         app:layout_constraintTop_toTopOf="@id/speedLabelTextView"
-        tools:text="0" />
+        android:text="@string/track_screen_default_speed_value" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/speedUnitTextView"
@@ -108,7 +109,7 @@
         app:layout_constraintEnd_toStartOf="@id/distanceUnitTextView"
         app:layout_constraintTop_toTopOf="@id/distanceLabelTextView"
         app:layout_goneMarginStart="15dp"
-        tools:text="16" />
+        android:text="@string/track_screen_default_distance_value" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/distanceUnitTextView"
@@ -121,6 +122,7 @@
 
 
     <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/trackerButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/teal_700"
