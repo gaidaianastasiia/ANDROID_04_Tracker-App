@@ -6,6 +6,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.example.trackerapp.domain.DeleteAllUserLocationsInteractor
 import com.example.trackerapp.domain.GetAllUserLocationsInteractor
+import com.example.trackerapp.domain.GetAverageSpeedInteractor
 import com.example.trackerapp.domain.GetCoveredDistanceInteractor
 import com.example.trackerapp.entity.UserLocation
 import com.example.trackerapp.presentation.base.BaseViewModel
@@ -21,7 +22,8 @@ class TrackerViewModel @AssistedInject constructor(
     @Assisted savedStateHandle: SavedStateHandle,
     private val getAllUserLocations: GetAllUserLocationsInteractor,
     private val deleteAllUserLocations: DeleteAllUserLocationsInteractor,
-    private val getCoveredDistance: GetCoveredDistanceInteractor
+    private val getCoveredDistance: GetCoveredDistanceInteractor,
+    private val getAverageSpeed: GetAverageSpeedInteractor
 ) : BaseViewModel(savedStateHandle) {
     @AssistedFactory
     interface Factory : BaseViewModelAssistedFactory<TrackerViewModel>
@@ -30,7 +32,15 @@ class TrackerViewModel @AssistedInject constructor(
     val showCoveredDistance: LiveData<Double>
         get() = _showCoveredDistance
 
-    private val _startTrackUserLocation = MutableLiveData<Boolean>(false)
+    private val _showAverageSpeed = MutableLiveData<Double>()
+    val showAverageSpeed: LiveData<Double>
+        get() = _showAverageSpeed
+
+    private val _showCurrentSpeed = MutableLiveData<Double>()
+    val showCurrentSpeed: LiveData<Double>
+        get() = _showCurrentSpeed
+
+    private val _startTrackUserLocation = MutableLiveData<Boolean>()
     val startTrackUserLocation: LiveData<Boolean>
         get() = _startTrackUserLocation
 
@@ -41,12 +51,40 @@ class TrackerViewModel @AssistedInject constructor(
     private var isUserLocationTracking = false
     private var userLocationsJob: Job? = null
     private var coveredDistanceJob: Job? = null
+    private var averageSpeedJob: Job? = null
 
     fun onTrackerButtonClick() {
         if(isUserLocationTracking) {
             stopTrackLocation()
         } else {
             startTrackLocation()
+        }
+    }
+
+    fun getCoveredDistanceInMeters() {
+        coveredDistanceJob =  viewModelScope.launch {
+            getCoveredDistance()
+                .collect{
+                    _showCoveredDistance.value = it
+                }
+        }
+    }
+
+    fun getUserAverageSpeed() {
+        averageSpeedJob = viewModelScope.launch {
+            getAverageSpeed().collect {
+                _showAverageSpeed.value = it
+            }
+        }
+    }
+
+    fun requestList() {
+       userLocationsJob = viewModelScope.launch {
+           getAllUserLocations()
+               .collect {
+                   _userLocationsList.value = it
+                   getCurrentSpeed(it)
+               }
         }
     }
 
@@ -60,27 +98,17 @@ class TrackerViewModel @AssistedInject constructor(
         _startTrackUserLocation.value = false
         userLocationsJob?.cancel()
         coveredDistanceJob?.cancel()
+        averageSpeedJob?.cancel()
+        _showCurrentSpeed.value = 0.0
 
         viewModelScope.launch {
             deleteAllUserLocations()
         }
     }
 
-    fun getCoveredDistanceInMeters() {
-        coveredDistanceJob =  viewModelScope.launch {
-            getCoveredDistance()
-                .collect{
-                    _showCoveredDistance.value = it
-                }
-        }
-    }
-
-    fun requestList() {
-       userLocationsJob = viewModelScope.launch {
-           getAllUserLocations()
-               .collect {
-                   _userLocationsList.value = it
-               }
+    private fun getCurrentSpeed(userLocationsList: List<UserLocation>) {
+        if (userLocationsList.isNotEmpty()) {
+            _showCurrentSpeed.value = userLocationsList.last().speed
         }
     }
 }

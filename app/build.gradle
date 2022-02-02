@@ -1,8 +1,6 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-
-    //Support annotation processors
     id 'kotlin-kapt'
 }
 
@@ -11,11 +9,10 @@ android {
 
     defaultConfig {
         applicationId "com.example.trackerapp"
-        minSdk 26
+        minSdk 28
         targetSdk 31
         versionCode 1
         versionName "1.0"
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 

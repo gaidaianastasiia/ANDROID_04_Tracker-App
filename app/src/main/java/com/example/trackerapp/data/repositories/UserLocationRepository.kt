@@ -17,5 +17,6 @@ interface UserLocationRepository {
     fun getAllUserLocations(): Flow<List<UserLocationData>>
     suspend fun getLastUserLocation(): UserLocationData?
     fun getCoveredDistance(): Flow<Double?>
+    suspend fun getStartTime(): LocalDateTime?
     suspend fun deleteAllUserLocations()
 }

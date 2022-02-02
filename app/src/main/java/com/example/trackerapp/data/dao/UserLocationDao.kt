@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import com.example.trackerapp.data.entity.UserLocationData
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDateTime
 
 @Dao
 interface UserLocationDao {
@@ -22,6 +23,9 @@ interface UserLocationDao {
 
     @Query("SELECT SUM(distance) from UserLocationData")
     fun getCoveredDistance(): Flow<Double?>
+
+    @Query("SELECT MIN(time) from UserLocationData")
+    suspend fun getStartTime(): LocalDateTime?
 
     @Query("DELETE FROM UserLocationData")
     suspend fun deleteAllUserLocations()

@@ -1,10 +1,6 @@
 package com.example.trackerapp.domain
 
 import android.util.Log
-import com.google.android.gms.common.util.NumberUtils
-import java.lang.Math.round
-import java.lang.StrictMath.round
-import java.math.RoundingMode
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject

@@ -40,6 +40,9 @@ class LocalUserLocationRepository @Inject constructor(
     override fun getCoveredDistance(): Flow<Double?> =
         userLocationDao.getCoveredDistance()
 
+    override suspend fun getStartTime(): LocalDateTime? =
+        userLocationDao.getStartTime()
+
     override suspend fun deleteAllUserLocations() {
         userLocationDao.deleteAllUserLocations()
     }

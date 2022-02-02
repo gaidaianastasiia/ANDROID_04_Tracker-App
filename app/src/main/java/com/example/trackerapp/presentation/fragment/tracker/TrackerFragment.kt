@@ -2,12 +2,14 @@ package com.example.trackerapp.presentation.fragment.tracker
 
 import android.Manifest
 import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.content.Context
 import android.content.Context.LOCATION_SERVICE
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,6 +26,26 @@ import com.google.android.gms.maps.model.*
 import com.google.android.gms.maps.model.JointType.ROUND
 import com.google.android.material.snackbar.Snackbar
 import kotlin.reflect.KClass
+import android.widget.Toast
+
+import android.graphics.Bitmap
+
+import android.os.Environment
+
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.GoogleMap.SnapshotReadyCallback
+import java.io.File
+import java.io.FileOutputStream
+import java.lang.Exception
+import android.content.ContextWrapper
+import java.util.*
+
+import android.graphics.BitmapFactory
+import android.os.SystemClock
+import android.widget.ImageView
+import java.io.FileInputStream
+import java.io.FileNotFoundException
+
 
 private val TAG = TrackerFragment::class.java.simpleName
 private const val REQUEST_PERMISSIONS_REQUEST_CODE = 34
@@ -39,6 +61,8 @@ class TrackerFragment :
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var userDistancePolyline: Polyline? = null
     private var defaultUserLocationMarker: Marker? = null
+    private var offset: Long? = null
+    private var imageName: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,7 +98,7 @@ class TrackerFragment :
                     R.string.permission_rationale,
                     Snackbar.LENGTH_INDEFINITE
                 )
-                    .setAction(R.string.ok, {
+                    .setAction(R.string.permission_positive_button_text, {
                         requestLocationPermission()
                     })
                     .show()
@@ -119,19 +143,25 @@ class TrackerFragment :
             }
         }
 
+        viewModel.showCurrentSpeed.observe(viewLifecycleOwner) {
+            binding.speedTextView.text = it.toString()
+        }
+
         viewModel.showCoveredDistance.observe(viewLifecycleOwner) {
             binding.distanceTextView.text = it.toString()
+        }
+
+        viewModel.showAverageSpeed.observe(viewLifecycleOwner) {
+            binding.averageSpeedTextView.text = it.toString()
         }
     }
 
     private fun onFetchUserLocationsList(userLocationsList: List<UserLocation>) {
-        showUserDistanceMapPolyline(userLocationsList)
-        viewModel.getCoveredDistanceInMeters()
-
-        if (userLocationsList.size > 0) {
-            val lastUserLocation = userLocationsList.last()
-            binding.speedTextView.text = lastUserLocation.speed.toString()
-            moveMapCamera(lastUserLocation.location)
+        if (userLocationsList.isNotEmpty()) {
+            showUserDistanceMapPolyline(userLocationsList)
+            viewModel.getCoveredDistanceInMeters()
+            viewModel.getUserAverageSpeed()
+            moveMapCamera(userLocationsList.last().location)
         }
     }
 
@@ -139,17 +169,31 @@ class TrackerFragment :
         viewModel.requestList()
         requireActivity().startForegroundService(
             Intent(requireContext(),
-            LocationService::class.java)
+                LocationService::class.java)
         )
         removeDefaultUserLocationMapMarker()
+        startTimeCounter()
         binding.trackerButton.setText(R.string.track_screen_stop_tracker_button_text)
     }
 
     private fun onStopTrackLocation() {
+        takeMapSnapShot()
         requireActivity().stopService(Intent(requireContext(), LocationService::class.java))
+
+        stopTimeCounter()
         removeUserDistanceMapPolyline()
         showCurrentUserLocation()
         binding.trackerButton.setText(R.string.track_screen_start_tracker_button_text)
+    }
+    
+    private fun startTimeCounter() {
+        binding.timeChronometer.base = SystemClock.elapsedRealtime()
+        binding.timeChronometer.start()
+    }
+    
+    private fun stopTimeCounter() {
+        binding.timeChronometer.stop()
+        binding.timeChronometer.base = SystemClock.elapsedRealtime()
     }
 
     private fun startMapInitialization() {
@@ -175,7 +219,7 @@ class TrackerFragment :
     private fun moveMapCamera(userLocation: LatLng) {
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 18F))
     }
-    
+
     private fun showDefaultUserLocationMapMarker(userLocation: LatLng) {
         if (defaultUserLocationMarker == null) {
             defaultUserLocationMarker = googleMap.addMarker(MarkerOptions()
@@ -183,7 +227,7 @@ class TrackerFragment :
                 .title("Marker in User Location"))
         }
     }
-    
+
     private fun removeDefaultUserLocationMapMarker() {
         if (defaultUserLocationMarker != null) {
             defaultUserLocationMarker?.remove()
@@ -201,11 +245,60 @@ class TrackerFragment :
             jointType(ROUND)
         })
     }
-    
+
     private fun removeUserDistanceMapPolyline() {
         if (userDistancePolyline != null) {
             userDistancePolyline?.remove()
             userDistancePolyline = null
+        }
+    }
+
+    private fun takeMapSnapShot() {
+        val callback: SnapshotReadyCallback = object : SnapshotReadyCallback {
+            var bitmap: Bitmap? = null
+            override fun onSnapshotReady(snapshot: Bitmap?) {
+                bitmap = snapshot
+                try {
+                    bitmap?.let { saveMapImage(it) }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+
+        googleMap.snapshot(callback)
+    }
+
+    private fun saveMapImage(image: Bitmap) {
+        val cw = ContextWrapper(requireContext())
+        val directory = cw.getDir("profile", Context.MODE_APPEND)
+        if (!directory.exists()) {
+            directory.mkdir()
+        }
+
+        imageName = "map${Date().time}.png"
+        val mypath = File(directory, imageName)
+
+        var fos: FileOutputStream? = null
+        try {
+            fos = FileOutputStream(mypath)
+            image.compress(Bitmap.CompressFormat.PNG, 100, fos)
+            fos.close()
+        } catch (e: Exception) {
+            Log.e("SAVE_IMAGE", e.message, e)
+        }
+    }
+
+    private fun getMapImage() {
+        try {
+            val cw = ContextWrapper(requireContext())
+            val path1 = cw.getDir("profile", Context.MODE_PRIVATE)
+            val f = File(path1, imageName)
+            val bitmap = BitmapFactory.decodeStream(FileInputStream(f))
+
+            //todo
+        } catch (e: FileNotFoundException) {
+            e.printStackTrace()
         }
     }
 }
