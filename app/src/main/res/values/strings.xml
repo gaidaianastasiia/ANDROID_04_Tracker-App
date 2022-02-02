@@ -1,3 +1,19 @@
 <resources>
     <string name="app_name">TrackerApp</string>
+    <string name="error_message">Oops! Something went wrong</string>
+
+    <string name="permission_rationale">Location permission is needed for core functionality</string>
+    <string name="permission_denied_explanation">Permission was denied, but is needed for core functionality.</string>
+    <string name="permission_positive_button_text">OK</string>
+
+    <string name="track_screen_time_divider">:</string>
+    <string name="track_screen_time_label">TIME</string>
+    <string name="track_screen_speed_label">CURRENT SPEED (km/h)</string>
+    <string name="track_screen_distance_label">DISTANCE (m)</string>
+    <string name="track_screen_average_pace_label">AVERAGE SPEED (km/h)</string>
+    <string name="track_screen_default_time_value">00</string>
+    <string name="track_screen_default_speed_value">0.0</string>
+    <string name="track_screen_default_distance_value">0.0</string>
+    <string name="track_screen_start_tracker_button_text">START</string>
+    <string name="track_screen_stop_tracker_button_text">STOP</string>
 </resources>

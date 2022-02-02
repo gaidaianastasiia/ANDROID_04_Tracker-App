@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/trackerFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".presentation.fragment.tracker.TrackerFragment">
+
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@id/horizontalGuideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        tools:context=".MapsActivity" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideline"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.50" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/content_start"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="15dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/content_middle"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/content_end"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="15dp" />
+
+    <View
+        android:id="@+id/trackingDataTopHorizontalDividerView"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginEnd="15dp"
+        android:background="@color/grey_200"
+        app:layout_constraintEnd_toStartOf="@id/content_end"
+        app:layout_constraintStart_toStartOf="@id/content_start"
+        app:layout_constraintTop_toBottomOf="@id/timeLabelTextView" />
+
+    <View
+        android:id="@+id/trackingDataTopVerticalDividerView"
+        android:layout_width="1dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        android:background="@color/grey_200"
+        app:layout_constraintBottom_toTopOf="@id/trackingDataTopHorizontalDividerView"
+        app:layout_constraintStart_toStartOf="@id/content_middle"
+        app:layout_constraintTop_toBottomOf="@id/map" />
+
+    <View
+        android:id="@+id/trackingDataBottomHorizontalDividerView"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginEnd="15dp"
+        android:background="@color/grey_200"
+        app:layout_constraintEnd_toStartOf="@id/content_end"
+        app:layout_constraintStart_toStartOf="@id/content_start"
+        app:layout_constraintTop_toBottomOf="@id/speedLabelTextView" />
+
+    <View
+        android:id="@+id/trackingDataBottomVerticalDividerView"
+        android:layout_width="1dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        android:background="@color/grey_200"
+        app:layout_constraintBottom_toTopOf="@id/trackingDataBottomHorizontalDividerView"
+        app:layout_constraintStart_toStartOf="@id/content_middle"
+        app:layout_constraintTop_toBottomOf="@id/trackingDataTopHorizontalDividerView" />
+
+    <Chronometer
+        android:id="@+id/timeChronometer"
+        style="@style/TrackerScreenTrackingData"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:format="00:%s"
+        app:layout_constraintEnd_toStartOf="@id/content_middle"
+        app:layout_constraintStart_toStartOf="@id/content_start"
+        app:layout_constraintTop_toBottomOf="@id/horizontalGuideline" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/timeLabelTextView"
+        style="@style/TrackerScreenTrackingDataLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="@string/track_screen_time_label"
+        app:layout_constraintEnd_toStartOf="@id/content_middle"
+        app:layout_constraintStart_toStartOf="@id/content_start"
+        app:layout_constraintTop_toBottomOf="@id/timeChronometer" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/speedLabelTextView"
+        style="@style/TrackerScreenTrackingDataLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="@string/track_screen_speed_label"
+        app:layout_constraintEnd_toStartOf="@id/content_middle"
+        app:layout_constraintStart_toStartOf="@id/content_start"
+        app:layout_constraintTop_toBottomOf="@id/speedTextView" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/speedTextView"
+        style="@style/TrackerScreenTrackingData"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:text="@string/track_screen_default_speed_value"
+        app:layout_constraintEnd_toStartOf="@id/content_middle"
+        app:layout_constraintStart_toStartOf="@id/content_start"
+        app:layout_constraintTop_toBottomOf="@id/trackingDataTopHorizontalDividerView" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/distanceLabelTextView"
+        style="@style/TrackerScreenTrackingDataLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="@string/track_screen_distance_label"
+        app:layout_constraintEnd_toStartOf="@id/content_end"
+        app:layout_constraintStart_toEndOf="@id/content_middle"
+        app:layout_constraintTop_toBottomOf="@id/distanceTextView" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/averageSpeedTextView"
+        style="@style/TrackerScreenTrackingData"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:text="@string/track_screen_default_speed_value"
+        app:layout_constraintEnd_toStartOf="@id/content_end"
+        app:layout_constraintStart_toEndOf="@id/content_middle"
+        app:layout_constraintTop_toBottomOf="@id/trackingDataTopHorizontalDividerView" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/averageSpeedLabelTextView"
+        style="@style/TrackerScreenTrackingDataLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="@string/track_screen_average_pace_label"
+        app:layout_constraintEnd_toStartOf="@id/content_end"
+        app:layout_constraintStart_toEndOf="@id/content_middle"
+        app:layout_constraintTop_toBottomOf="@id/averageSpeedTextView" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/distanceTextView"
+        style="@style/TrackerScreenTrackingData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:text="@string/track_screen_default_distance_value"
+        app:layout_constraintEnd_toStartOf="@id/content_end"
+        app:layout_constraintStart_toEndOf="@id/content_middle"
+        app:layout_constraintTop_toBottomOf="@id/map" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/trackerButton"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:background="@drawable/circle_shape"
+        android:text="@string/track_screen_start_tracker_button_text"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/trackingDataBottomHorizontalDividerView" />
+</androidx.constraintlayout.widget.ConstraintLayout>

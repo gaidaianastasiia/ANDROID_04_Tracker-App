@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="MyToolbar">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="android:background">@color/orange_500</item>
+    </style>
+
+    <style name="TrackerScreenTrackingData">
+        <item name="android:textSize">30sp</item>
+        <item name="android:textFontWeight">700</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:fontFamily">@font/main_font</item>
+        <item name="android:textColor">@color/grey_700</item>
+    </style>
+
+    <style name="TrackerScreenTrackingDataLabel">
+        <item name="android:textSize">10sp</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textColor">@color/grey_500</item>
+    </style>
+</resources>
