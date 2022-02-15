@@ -7,18 +7,11 @@ import java.time.LocalDateTime
 
 @Entity
 data class UserLocationData(
-    @PrimaryKey(autoGenerate = true) val id: Long,
-    @ColumnInfo val latitude: Double,
-    @ColumnInfo val longitude: Double,
-    @ColumnInfo val distance: Double,
-    @ColumnInfo val time: LocalDateTime,
-    @ColumnInfo val speed: Double,
-) {
-    constructor(
-        latitude: Double,
-        longitude: Double,
-        distance: Double,
-        time: LocalDateTime,
-        speed: Double,
-    ) : this(0, latitude, longitude, distance, time, speed)
-}
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id") val id: Long = 0,
+    @ColumnInfo(name = "latitude") val latitude: Double,
+    @ColumnInfo(name = "longitude") val longitude: Double,
+    @ColumnInfo(name = "distance") val distance: Double,
+    @ColumnInfo(name = "time") val time: LocalDateTime,
+    @ColumnInfo(name = "speed") val speed: Double,
+)

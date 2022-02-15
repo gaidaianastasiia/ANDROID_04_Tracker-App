@@ -1,6 +1,7 @@
 package com.example.trackerapp.domain
 
 import com.example.trackerapp.data.repositories.UserLocationRepository
+import com.example.trackerapp.utils.DEFAULT_DISTANCE
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -11,7 +12,7 @@ class GetCoveredDistanceInteractor @Inject constructor(
 ) {
     operator fun invoke(): Flow<Double> =
         repository.getCoveredDistance()
-            .map { it ?: 0.0 }
+            .map { it ?: DEFAULT_DISTANCE }
             .map { (it * 10.0).roundToInt() / 10.0 }
 
 }

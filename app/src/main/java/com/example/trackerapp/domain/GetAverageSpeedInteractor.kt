@@ -1,6 +1,9 @@
 package com.example.trackerapp.domain
 
-import android.util.Log
+import com.example.trackerapp.utils.DEFAULT_SPEED
+import com.example.trackerapp.utils.METERS_IN_KILOMETERS
+import com.example.trackerapp.utils.MINUTES_IN_HOUR
+import com.example.trackerapp.utils.SECONDS_IN_MINUTE
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.LocalDateTime
@@ -15,10 +18,9 @@ class GetAverageSpeedInteractor @Inject constructor(
     suspend operator fun invoke(): Flow<Double> {
         val timeIntervalInSeconds =
             ChronoUnit.SECONDS.between(getStartTime(), LocalDateTime.now()).toDouble()
-        val timeIntervalInHours = (timeIntervalInSeconds / 60) / 60
+        val timeIntervalInHours = (timeIntervalInSeconds / SECONDS_IN_MINUTE) / MINUTES_IN_HOUR
         return getCoveredDistance()
-            .map { if (it != 0.0) (it / 1000) / timeIntervalInHours else 0.0 }
-            .map { Log.d("###", "$it") }
+            .map { if (it != DEFAULT_SPEED) (it / METERS_IN_KILOMETERS) / timeIntervalInHours else DEFAULT_SPEED }
             .map { (it * 10.0).roundToInt() / 10.0 }
     }
 } 

@@ -17,7 +17,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TrackerApp">
         <service
-            android:name=".presentation.fragment.tracker.LocationService"
+            android:name=".services.LocationService"
             android:enabled="true"
             android:foregroundServiceType="location"
             android:exported="true"/>

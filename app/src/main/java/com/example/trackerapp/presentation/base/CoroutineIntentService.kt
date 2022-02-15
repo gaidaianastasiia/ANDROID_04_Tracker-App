@@ -1,10 +1,8 @@
-package com.example.trackerapp.presentation.fragment.tracker
+package com.example.trackerapp.presentation.base
 
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
-import android.os.Looper
-import android.util.Log
 import androidx.annotation.Nullable
 import androidx.annotation.WorkerThread
 import dagger.android.DaggerService
@@ -14,7 +12,10 @@ import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.channels.actor
 import kotlin.coroutines.CoroutineContext
 
-abstract class CoroutineIntentService(private val mName: String) : DaggerService(), CoroutineScope {
+/**
+ * This class helps start the service in a new coroutine.
+ */
+abstract class CoroutineIntentService(private val serviceName: String) : DaggerService(), CoroutineScope {
     private var coroutineJob: Job = Job()
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Default + coroutineJob
@@ -23,7 +24,7 @@ abstract class CoroutineIntentService(private val mName: String) : DaggerService
 
     override fun onCreate() {
         super.onCreate()
-        handlerActor = handlerActor(mName)
+        handlerActor = handlerActor(serviceName)
     }
 
     override fun onStartCommand(@Nullable intent: Intent?, flags: Int, startId: Int): Int {

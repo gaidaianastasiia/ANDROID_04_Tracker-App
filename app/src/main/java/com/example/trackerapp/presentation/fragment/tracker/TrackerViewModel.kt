@@ -23,7 +23,7 @@ class TrackerViewModel @AssistedInject constructor(
     private val getAllUserLocations: GetAllUserLocationsInteractor,
     private val deleteAllUserLocations: DeleteAllUserLocationsInteractor,
     private val getCoveredDistance: GetCoveredDistanceInteractor,
-    private val getAverageSpeed: GetAverageSpeedInteractor
+    private val getAverageSpeed: GetAverageSpeedInteractor,
 ) : BaseViewModel(savedStateHandle) {
     @AssistedFactory
     interface Factory : BaseViewModelAssistedFactory<TrackerViewModel>
@@ -54,23 +54,38 @@ class TrackerViewModel @AssistedInject constructor(
     private var averageSpeedJob: Job? = null
 
     fun onTrackerButtonClick() {
-        if(isUserLocationTracking) {
+        if (isUserLocationTracking) {
             stopTrackLocation()
         } else {
             startTrackLocation()
         }
     }
 
-    fun getCoveredDistanceInMeters() {
-        coveredDistanceJob =  viewModelScope.launch {
+    private fun requestList() {
+        userLocationsJob = viewModelScope.launch {
+            getAllUserLocations()
+                .collect {
+                    _userLocationsList.value = it
+
+                    if (it.isNotEmpty()) {
+                        getCoveredDistanceInMeters()
+                        getUserAverageSpeed()
+                        getCurrentSpeed(it)
+                    }
+                }
+        }
+    }
+
+    private fun getCoveredDistanceInMeters() {
+        coveredDistanceJob = viewModelScope.launch {
             getCoveredDistance()
-                .collect{
+                .collect {
                     _showCoveredDistance.value = it
                 }
         }
     }
 
-    fun getUserAverageSpeed() {
+    private fun getUserAverageSpeed() {
         averageSpeedJob = viewModelScope.launch {
             getAverageSpeed().collect {
                 _showAverageSpeed.value = it
@@ -78,19 +93,10 @@ class TrackerViewModel @AssistedInject constructor(
         }
     }
 
-    fun requestList() {
-       userLocationsJob = viewModelScope.launch {
-           getAllUserLocations()
-               .collect {
-                   _userLocationsList.value = it
-                   getCurrentSpeed(it)
-               }
-        }
-    }
-
     private fun startTrackLocation() {
         isUserLocationTracking = true
         _startTrackUserLocation.value = true
+        requestList()
     }
 
     private fun stopTrackLocation() {
@@ -107,8 +113,6 @@ class TrackerViewModel @AssistedInject constructor(
     }
 
     private fun getCurrentSpeed(userLocationsList: List<UserLocation>) {
-        if (userLocationsList.isNotEmpty()) {
-            _showCurrentSpeed.value = userLocationsList.last().speed
-        }
+        _showCurrentSpeed.value = userLocationsList.last().speed
     }
 }

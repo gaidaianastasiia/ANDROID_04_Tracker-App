@@ -4,7 +4,8 @@
 
     <string name="permission_rationale">Location permission is needed for core functionality</string>
     <string name="permission_denied_explanation">Permission was denied, but is needed for core functionality.</string>
-    <string name="permission_positive_button_text">OK</string>
+    <string name="permission_action_button_text">OK</string>
+    <string name="permission_dismiss_button_text">Dismiss</string>
 
     <string name="track_screen_time_divider">:</string>
     <string name="track_screen_time_label">TIME</string>
@@ -16,4 +17,7 @@
     <string name="track_screen_default_distance_value">0.0</string>
     <string name="track_screen_start_tracker_button_text">START</string>
     <string name="track_screen_stop_tracker_button_text">STOP</string>
+
+    <string name="location_service_notification_channel_name">Location Service</string>
+    <string name="insert_user_location_exception_message">Insert was failed</string>
 </resources>

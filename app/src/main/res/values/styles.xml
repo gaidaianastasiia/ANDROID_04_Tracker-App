@@ -19,4 +19,11 @@
         <item name="android:textAlignment">center</item>
         <item name="android:textColor">@color/grey_500</item>
     </style>
+
+    <style name="TrackerScreenTrackerButton">
+        <item name="android:background">@drawable/tracker_button_background</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:enabled">true</item>
+    </style>
 </resources>
