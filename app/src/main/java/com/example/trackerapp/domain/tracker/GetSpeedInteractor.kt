@@ -1,4 +1,4 @@
-package com.example.trackerapp.domain
+package com.example.trackerapp.domain.tracker
 
 import com.example.trackerapp.utils.*
 import java.time.LocalDateTime

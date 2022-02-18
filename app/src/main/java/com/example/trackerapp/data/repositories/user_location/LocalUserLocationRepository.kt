@@ -1,4 +1,4 @@
-package com.example.trackerapp.data.repositories
+package com.example.trackerapp.data.repositories.user_location
 
 import com.example.trackerapp.data.dao.UserLocationDao
 import com.example.trackerapp.data.entity.UserLocationData
@@ -33,6 +33,9 @@ class LocalUserLocationRepository @Inject constructor(
 
     override fun getCoveredDistance(): Flow<Double?> =
         userLocationDao.getCoveredDistance()
+
+    override suspend fun getFinalDistance(): Double? =
+        userLocationDao.getFinalDistance()
 
     override suspend fun getStartTime(): LocalDateTime? =
         userLocationDao.getStartTime()

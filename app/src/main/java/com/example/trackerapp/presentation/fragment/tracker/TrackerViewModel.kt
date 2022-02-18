@@ -1,13 +1,17 @@
 package com.example.trackerapp.presentation.fragment.tracker
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.example.trackerapp.domain.DeleteAllUserLocationsInteractor
-import com.example.trackerapp.domain.GetAllUserLocationsInteractor
-import com.example.trackerapp.domain.GetAverageSpeedInteractor
-import com.example.trackerapp.domain.GetCoveredDistanceInteractor
+import com.example.trackerapp.domain.tracker.DeleteAllUserLocationsInteractor
+import com.example.trackerapp.domain.tracker.GetAllUserLocationsInteractor
+import com.example.trackerapp.domain.tracker.GetAverageSpeedInteractor
+import com.example.trackerapp.domain.tracker.GetCoveredDistanceInteractor
+import com.example.trackerapp.domain.walk.InsertWalkInteractor
 import com.example.trackerapp.entity.UserLocation
 import com.example.trackerapp.presentation.base.BaseViewModel
 import com.example.trackerapp.presentation.base.BaseViewModelAssistedFactory
@@ -24,6 +28,7 @@ class TrackerViewModel @AssistedInject constructor(
     private val deleteAllUserLocations: DeleteAllUserLocationsInteractor,
     private val getCoveredDistance: GetCoveredDistanceInteractor,
     private val getAverageSpeed: GetAverageSpeedInteractor,
+    private val insertWalk: InsertWalkInteractor,
 ) : BaseViewModel(savedStateHandle) {
     @AssistedFactory
     interface Factory : BaseViewModelAssistedFactory<TrackerViewModel>
@@ -55,9 +60,9 @@ class TrackerViewModel @AssistedInject constructor(
 
     fun onTrackerButtonClick() {
         if (isUserLocationTracking) {
-            stopTrackLocation()
+            setStopTrackLocationState()
         } else {
-            startTrackLocation()
+            setStartTrackLocationState()
         }
     }
 
@@ -72,6 +77,18 @@ class TrackerViewModel @AssistedInject constructor(
                         getUserAverageSpeed()
                         getCurrentSpeed(it)
                     }
+                }
+        }
+    }
+
+    fun saveWalkData(context: Context, walkMapImage: Bitmap?) {
+        viewModelScope.launch {
+            insertWalk(context, walkMapImage)
+                .doOnSuccess {
+                    stopTrackLocation()
+                }
+                .doOnError { error ->
+                    onStorageError(error)
                 }
         }
     }
@@ -93,23 +110,23 @@ class TrackerViewModel @AssistedInject constructor(
         }
     }
 
-    private fun startTrackLocation() {
+    private fun setStartTrackLocationState() {
         isUserLocationTracking = true
         _startTrackUserLocation.value = true
         requestList()
     }
 
-    private fun stopTrackLocation() {
-        isUserLocationTracking = false
+    private fun setStopTrackLocationState() {
         _startTrackUserLocation.value = false
+    }
+
+    private suspend fun stopTrackLocation() {
+        isUserLocationTracking = false
+        _showCurrentSpeed.value = 0.0
         userLocationsJob?.cancel()
         coveredDistanceJob?.cancel()
         averageSpeedJob?.cancel()
-        _showCurrentSpeed.value = 0.0
-
-        viewModelScope.launch {
-            deleteAllUserLocations()
-        }
+        deleteAllUserLocations()
     }
 
     private fun getCurrentSpeed(userLocationsList: List<UserLocation>) {

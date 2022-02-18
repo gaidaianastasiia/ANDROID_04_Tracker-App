@@ -31,12 +31,20 @@ import android.net.Uri
 import android.os.SystemClock
 import android.provider.Settings
 import android.util.Log
+import androidx.fragment.app.commit
+import androidx.fragment.app.replace
 import androidx.lifecycle.lifecycleScope
+import com.example.trackerapp.presentation.fragment.walk_list.WalkListFragment
 import com.example.trackerapp.services.LocationService
 import com.example.trackerapp.utils.PermissionsManager
 import kotlinx.coroutines.launch
 import java.io.FileInputStream
 import java.io.FileNotFoundException
+import java.text.SimpleDateFormat
+import java.time.Duration
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 class TrackerFragment :
@@ -76,6 +84,10 @@ class TrackerFragment :
 
 
     private fun setClickListeners() {
+        binding.toolbar.setNavigationOnClickListener {
+            parentFragmentManager.popBackStack()
+        }
+
         binding.trackerButton.setOnClickListener {
             viewModel.onTrackerButtonClick()
         }
@@ -149,11 +161,28 @@ class TrackerFragment :
     }
 
     private fun onStopTrackLocation() {
+        saveWalkData()
         requireActivity().stopService(Intent(requireContext(), LocationService::class.java))
         stopTimeCounter()
         removeUserDistanceMapPolyline()
         showCurrentUserLocation()
         binding.trackerButton.setText(R.string.track_screen_start_tracker_button_text)
+    }
+
+    private fun saveWalkData() {
+        val callback: SnapshotReadyCallback = object : SnapshotReadyCallback {
+            var walkMapImage: Bitmap? = null
+            override fun onSnapshotReady(snapshot: Bitmap?) {
+                walkMapImage = snapshot
+                try {
+                    viewModel.saveWalkData(requireContext(), walkMapImage)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+
+        googleMap.snapshot(callback)
     }
 
     private fun startTimeCounter() {
@@ -212,7 +241,7 @@ class TrackerFragment :
 
         userDistancePolyline = googleMap.addPolyline(PolylineOptions().apply {
             userLocations.forEach { add(it.location) }
-            color(Color.BLUE)
+            color(R.color.orange_200)
             width(9F)
             jointType(ROUND)
         })
@@ -223,22 +252,6 @@ class TrackerFragment :
             userDistancePolyline?.remove()
             userDistancePolyline = null
         }
-    }
-
-    private fun takeMapSnapShot() {
-        val callback: SnapshotReadyCallback = object : SnapshotReadyCallback {
-            var bitmap: Bitmap? = null
-            override fun onSnapshotReady(snapshot: Bitmap?) {
-                bitmap = snapshot
-                try {
-                    bitmap?.let { saveMapImage(it) }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            }
-        }
-
-        googleMap.snapshot(callback)
     }
 
     //TODO Lets discuss the correct place for this logic

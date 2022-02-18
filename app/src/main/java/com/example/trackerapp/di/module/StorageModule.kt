@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.example.trackerapp.data.ApplicationDatabase
 import com.example.trackerapp.data.dao.UserLocationDao
+import com.example.trackerapp.data.dao.WalkDao
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -25,5 +26,10 @@ class StorageModule {
     @Singleton
     fun provideUserLocationDao(database: ApplicationDatabase): UserLocationDao =
         database.userLocationDao()
+
+    @Provides
+    @Singleton
+    fun provideWalkDao(database: ApplicationDatabase): WalkDao =
+        database.walkDao()
 }
 

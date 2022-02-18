@@ -1,4 +1,4 @@
-package com.example.trackerapp.data.repositories
+package com.example.trackerapp.data.repositories.user_location
 
 import com.example.trackerapp.data.entity.UserLocationData
 import kotlinx.coroutines.flow.Flow
@@ -11,6 +11,7 @@ interface UserLocationRepository {
     fun getAllUserLocations(): Flow<List<UserLocationData>>
     suspend fun getLastUserLocation(): UserLocationData?
     fun getCoveredDistance(): Flow<Double?>
+    suspend fun getFinalDistance(): Double?
     suspend fun getStartTime(): LocalDateTime?
     suspend fun deleteAllUserLocations()
 }

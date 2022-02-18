@@ -1,4 +1,4 @@
-package com.example.trackerapp.domain
+package com.example.trackerapp.domain.tracker
 
 import com.example.trackerapp.utils.DEFAULT_SPEED
 import com.example.trackerapp.utils.METERS_IN_KILOMETERS

@@ -8,7 +8,7 @@ import android.os.Build
 import android.os.Looper
 import android.util.Log
 import androidx.annotation.RequiresApi
-import com.example.trackerapp.domain.InsertUserLocationInteractor
+import com.example.trackerapp.domain.tracker.InsertUserLocationInteractor
 import com.example.trackerapp.presentation.base.CoroutineIntentService
 import com.google.android.gms.location.*
 import kotlinx.coroutines.Dispatchers

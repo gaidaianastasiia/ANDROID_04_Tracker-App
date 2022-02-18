@@ -1,6 +1,6 @@
-package com.example.trackerapp.domain
+package com.example.trackerapp.domain.tracker
 
-import com.example.trackerapp.data.repositories.UserLocationRepository
+import com.example.trackerapp.data.repositories.user_location.UserLocationRepository
 import com.example.trackerapp.utils.DEFAULT_DISTANCE
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
