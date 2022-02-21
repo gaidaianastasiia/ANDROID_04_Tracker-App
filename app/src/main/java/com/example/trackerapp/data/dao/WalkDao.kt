@@ -15,4 +15,8 @@ interface WalkDao {
     @Query("SELECT * FROM WalkData")
     @Throws(SQLiteException::class)
     suspend fun getWalkList(): List<WalkData>
+
+    @Query("DELETE FROM WalkData WHERE id = :idToDelete")
+    @Throws(SQLiteException::class)
+    suspend fun delete(idToDelete: Long): Int
 }

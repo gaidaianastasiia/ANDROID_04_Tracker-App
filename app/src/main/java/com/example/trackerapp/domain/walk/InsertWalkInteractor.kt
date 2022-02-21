@@ -6,7 +6,7 @@ import com.example.trackerapp.data.repositories.walk.WalkRepository
 import com.example.trackerapp.domain.tracker.final_user_locations_data.GetFinalAverageSpeedInteractor
 import com.example.trackerapp.domain.tracker.final_user_locations_data.GetFinalDistanceInteractor
 import com.example.trackerapp.domain.tracker.final_user_locations_data.GetFinalTimeInteractor
-import com.example.trackerapp.entity.Walk
+import com.example.trackerapp.entity.NewWalk
 import com.example.trackerapp.entity.Result
 import com.example.trackerapp.utils.ImageManager
 import java.util.*
@@ -35,7 +35,7 @@ class InsertWalkInteractor @Inject constructor(
         val time = getFinalTime()
         val distance = getFinalDistance().toString()
         val speed = getFinalAverageSpeed().toString()
-        val walk = Walk(walkMapImageName, date, time, distance, speed)
+        val walk = NewWalk(walkMapImageName, date, time, distance, speed)
 
         return walkRepository.insertWalk(walk)
     }

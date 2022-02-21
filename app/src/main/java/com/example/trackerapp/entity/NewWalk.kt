@@ -1,7 +1,6 @@
 package com.example.trackerapp.entity
 
-data class Walk(
-    val id: Long,
+data class NewWalk(
     val mapImageName: String?,
     val date: String,
     val time: String,

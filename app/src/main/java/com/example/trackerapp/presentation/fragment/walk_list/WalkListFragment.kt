@@ -18,8 +18,8 @@ import kotlin.reflect.KClass
 class WalkListFragment : BaseFragment<
         WalkListViewModel,
         WalkListViewModel.Factory,
-        FragmentWalkListBinding
-        >() {
+        FragmentWalkListBinding,
+        >(), WalksAdapter.OnItemClickListener {
 
     private lateinit var adapter: WalksAdapter
     override val viewModelClass: KClass<WalkListViewModel> = WalkListViewModel::class
@@ -39,10 +39,14 @@ class WalkListFragment : BaseFragment<
         viewModel.requestList()
     }
 
+    override fun onDeleteButtonClick(idToDelete: Long) {
+        viewModel.onDeleteWalkButtonClick(idToDelete)
+    }
+
     private fun setAdapter() {
         val recyclerView = binding.walkListRecyclerView
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        adapter = WalksAdapter(imageManager)
+        adapter = WalksAdapter(imageManager, this)
         recyclerView.adapter = adapter
     }
 

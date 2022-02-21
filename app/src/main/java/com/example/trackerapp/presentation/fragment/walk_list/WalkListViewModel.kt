@@ -4,9 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.example.trackerapp.domain.walk.DeleteWalkInteractor
 import com.example.trackerapp.domain.walk.GetWalkListInteractor
-import com.example.trackerapp.domain.walk.InsertWalkInteractor
-import com.example.trackerapp.entity.UserLocation
 import com.example.trackerapp.entity.Walk
 import com.example.trackerapp.presentation.base.BaseViewModel
 import com.example.trackerapp.presentation.base.BaseViewModelAssistedFactory
@@ -20,6 +19,7 @@ import kotlinx.coroutines.withContext
 class WalkListViewModel @AssistedInject constructor(
     @Assisted savedStateHandle: SavedStateHandle,
     private val getWalksList: GetWalkListInteractor,
+    private val deleteWalk: DeleteWalkInteractor,
 ) : BaseViewModel(savedStateHandle) {
     @AssistedFactory
     interface Factory : BaseViewModelAssistedFactory<WalkListViewModel>
@@ -43,6 +43,18 @@ class WalkListViewModel @AssistedInject constructor(
     fun requestList() {
         viewModelScope.launch(Dispatchers.IO) {
             fetchList()
+        }
+    }
+
+    fun onDeleteWalkButtonClick(idToDelete: Long) {
+        viewModelScope.launch {
+            deleteWalk(idToDelete)
+                .doOnSuccess {
+                    fetchList()
+                }
+                .doOnError { error ->
+                    onStorageError(error)
+                }
         }
     }
 

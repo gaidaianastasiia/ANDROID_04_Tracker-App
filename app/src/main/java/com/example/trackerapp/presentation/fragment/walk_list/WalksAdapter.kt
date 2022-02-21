@@ -26,7 +26,12 @@ private val DIFF_CALLBACK: DiffUtil.ItemCallback<Walk> =
 
 class WalksAdapter(
     private val imageManager: ImageManager,
+    private val onItemClickListener: OnItemClickListener,
 ) : ListAdapter<Walk, WalksAdapter.ViewHolder>(DIFF_CALLBACK) {
+
+    interface OnItemClickListener {
+        fun onDeleteButtonClick(idToDelete: Long)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val itemBinding = WalkListItemBinding.inflate(
@@ -41,10 +46,13 @@ class WalksAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val walk = getItem(position)
         holder.bind(walk)
+        holder.itemBinding.deleteWalkButton.setOnClickListener {
+            onItemClickListener.onDeleteButtonClick(walk.id)
+        }
     }
 
     class ViewHolder(
-        private val itemBinding: WalkListItemBinding,
+        val itemBinding: WalkListItemBinding,
         private val imageManager: ImageManager,
     ) : RecyclerView.ViewHolder(itemBinding.root) {
         fun bind(walk: Walk) {

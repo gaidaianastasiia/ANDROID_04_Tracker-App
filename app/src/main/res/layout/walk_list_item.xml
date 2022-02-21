@@ -2,9 +2,9 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_marginBottom="20dp"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="20dp">
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/walkTitleTextView"
@@ -14,6 +14,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="March 6 2022" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/deleteWalkButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="25dp"
+        android:background="?attr/selectableItemBackground"
+        android:src="@drawable/ic_baseline_delete_24"
+        app:layout_constraintBottom_toBottomOf="@id/walkTitleTextView"
+        app:layout_constraintStart_toEndOf="@id/walkTitleTextView"
+        app:layout_constraintTop_toTopOf="@id/walkTitleTextView" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/timeLabelTextView"
