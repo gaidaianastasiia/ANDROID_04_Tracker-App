@@ -21,6 +21,7 @@ class WalkListViewModel @AssistedInject constructor(
     private val getWalksList: GetWalkListInteractor,
     private val deleteWalk: DeleteWalkInteractor,
 ) : BaseViewModel(savedStateHandle) {
+
     @AssistedFactory
     interface Factory : BaseViewModelAssistedFactory<WalkListViewModel>
 

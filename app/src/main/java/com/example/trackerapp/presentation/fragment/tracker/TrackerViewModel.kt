@@ -2,7 +2,6 @@ package com.example.trackerapp.presentation.fragment.tracker
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -22,6 +21,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
+private const val TRACK_STATE_SAVED_STATE_HANDLE_KEY = "Track State SavedStateHandle key"
+
 class TrackerViewModel @AssistedInject constructor(
     @Assisted savedStateHandle: SavedStateHandle,
     private val getAllUserLocations: GetAllUserLocationsInteractor,
@@ -30,6 +31,7 @@ class TrackerViewModel @AssistedInject constructor(
     private val getAverageSpeed: GetAverageSpeedInteractor,
     private val insertWalk: InsertWalkInteractor,
 ) : BaseViewModel(savedStateHandle) {
+    
     @AssistedFactory
     interface Factory : BaseViewModelAssistedFactory<TrackerViewModel>
 
@@ -53,7 +55,9 @@ class TrackerViewModel @AssistedInject constructor(
     val userLocationsList: LiveData<List<UserLocation>>
         get() = _userLocationsList
 
-    private var isUserLocationTracking = false
+    private var isUserLocationTracking =
+        savedStateHandle.get(TRACK_STATE_SAVED_STATE_HANDLE_KEY) ?: false
+
     private var userLocationsJob: Job? = null
     private var coveredDistanceJob: Job? = null
     private var averageSpeedJob: Job? = null
@@ -63,21 +67,6 @@ class TrackerViewModel @AssistedInject constructor(
             setStopTrackLocationState()
         } else {
             setStartTrackLocationState()
-        }
-    }
-
-    private fun requestList() {
-        userLocationsJob = viewModelScope.launch {
-            getAllUserLocations()
-                .collect {
-                    _userLocationsList.value = it
-
-                    if (it.isNotEmpty()) {
-                        getCoveredDistanceInMeters()
-                        getUserAverageSpeed()
-                        getCurrentSpeed(it)
-                    }
-                }
         }
     }
 
@@ -93,7 +82,29 @@ class TrackerViewModel @AssistedInject constructor(
         }
     }
 
-    private fun getCoveredDistanceInMeters() {
+    private fun setStartTrackLocationState() {
+        isUserLocationTracking = true
+        _startTrackUserLocation.value = true
+        savedStateHandle.set(TRACK_STATE_SAVED_STATE_HANDLE_KEY, true)
+        requestList()
+    }
+
+    private fun requestList() {
+        userLocationsJob = viewModelScope.launch {
+            getAllUserLocations()
+                .collect {
+                    _userLocationsList.value = it
+
+                    if (it.isNotEmpty()) {
+                        handleCoveredDistance()
+                        handleUserAverageSpeed()
+                        handleCurrentSpeed(it)
+                    }
+                }
+        }
+    }
+
+    private fun handleCoveredDistance() {
         coveredDistanceJob = viewModelScope.launch {
             getCoveredDistance()
                 .collect {
@@ -102,7 +113,7 @@ class TrackerViewModel @AssistedInject constructor(
         }
     }
 
-    private fun getUserAverageSpeed() {
+    private fun handleUserAverageSpeed() {
         averageSpeedJob = viewModelScope.launch {
             getAverageSpeed().collect {
                 _showAverageSpeed.value = it
@@ -110,14 +121,13 @@ class TrackerViewModel @AssistedInject constructor(
         }
     }
 
-    private fun setStartTrackLocationState() {
-        isUserLocationTracking = true
-        _startTrackUserLocation.value = true
-        requestList()
+    private fun handleCurrentSpeed(userLocationsList: List<UserLocation>) {
+        _showCurrentSpeed.value = userLocationsList.last().speed
     }
 
     private fun setStopTrackLocationState() {
         _startTrackUserLocation.value = false
+        savedStateHandle.set(TRACK_STATE_SAVED_STATE_HANDLE_KEY, false)
     }
 
     private suspend fun stopTrackLocation() {
@@ -127,9 +137,5 @@ class TrackerViewModel @AssistedInject constructor(
         coveredDistanceJob?.cancel()
         averageSpeedJob?.cancel()
         deleteAllUserLocations()
-    }
-
-    private fun getCurrentSpeed(userLocationsList: List<UserLocation>) {
-        _showCurrentSpeed.value = userLocationsList.last().speed
     }
 }

@@ -1,6 +1,5 @@
 package com.example.trackerapp.presentation.fragment.walk_list
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -11,7 +10,6 @@ import com.example.trackerapp.R
 import com.example.trackerapp.databinding.WalkListItemBinding
 import com.example.trackerapp.entity.Walk
 import com.example.trackerapp.utils.ImageManager
-import javax.inject.Inject
 
 private val DIFF_CALLBACK: DiffUtil.ItemCallback<Walk> =
     object : DiffUtil.ItemCallback<Walk>() {
@@ -56,23 +54,24 @@ class WalksAdapter(
         private val imageManager: ImageManager,
     ) : RecyclerView.ViewHolder(itemBinding.root) {
         fun bind(walk: Walk) {
-            var walkMapImage: Bitmap? = null
+            itemBinding.apply {
+                var walkMapImage: Bitmap? = null
 
-            if (walk.mapImageName != null) {
-                walkMapImage = imageManager.getMapImage(itemBinding.root.context, walk.mapImageName)
-            }
+                if (walk.mapImageName != null) {
+                    walkMapImage =
+                        imageManager.getMapImage(root.context, walk.mapImageName)
+                }
 
-            if (walkMapImage != null) {
-                itemBinding.mapImageView.setImageBitmap(walkMapImage)
-            } else {
-                itemBinding.mapImageView.setBackgroundResource(R.drawable.default_walk_map_image)
-            }
+                if (walkMapImage != null) {
+                    mapImageView.setImageBitmap(walkMapImage)
+                } else {
+                    mapImageView.setBackgroundResource(R.drawable.default_walk_map_image)
+                }
 
-            itemBinding.let {
-                it.walkTitleTextView.text = walk.date
-                it.timeTextView.text = walk.time
-                it.distanceTextView.text = walk.distance
-                it.averageSpeedTextView.text = walk.speed
+                walkTitleTextView.text = walk.date
+                timeTextView.text = walk.time
+                distanceTextView.text = walk.distance
+                averageSpeedTextView.text = walk.speed
             }
         }
     }

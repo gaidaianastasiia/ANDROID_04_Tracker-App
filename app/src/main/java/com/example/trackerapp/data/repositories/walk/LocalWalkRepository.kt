@@ -27,7 +27,12 @@ class LocalWalkRepository @Inject constructor(
 
     override suspend fun getWalkList(): Result<List<Walk>> =
         try {
-            Result.Success(walkDao.getWalkList().toWalkList())
+            Result.Success(
+                walkDao
+                    .getWalkList()
+                    .toWalkList()
+                    .reversed()
+            )
         } catch (e: Exception) {
             Log.e("LocalWalkRepository", e.message ?: "Request Data Error")
             Result.Error(e)

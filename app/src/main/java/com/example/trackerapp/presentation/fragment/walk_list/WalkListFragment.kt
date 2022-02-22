@@ -23,12 +23,13 @@ class WalkListFragment : BaseFragment<
 
     private lateinit var adapter: WalksAdapter
     override val viewModelClass: KClass<WalkListViewModel> = WalkListViewModel::class
+
     @Inject
     lateinit var imageManager: ImageManager
 
     override fun createViewBinding(
         inflater: LayoutInflater,
-        parent: ViewGroup?
+        parent: ViewGroup?,
     ): FragmentWalkListBinding = FragmentWalkListBinding.inflate(inflater, parent, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -78,7 +79,9 @@ class WalkListFragment : BaseFragment<
         }
 
         viewModel.walksList.observe(viewLifecycleOwner) {
-            adapter.submitList(it)
+            adapter.submitList(it) {
+                binding.walkListRecyclerView.scrollToPosition(0)
+            }
         }
     }
 

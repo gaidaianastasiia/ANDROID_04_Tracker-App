@@ -1,9 +1,7 @@
 package com.example.trackerapp.presentation.fragment.tracker
 
 import android.Manifest.permission.ACCESS_FINE_LOCATION
-import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -21,30 +19,15 @@ import kotlin.reflect.KClass
 import android.graphics.Bitmap
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.SnapshotReadyCallback
-import java.io.File
-import java.io.FileOutputStream
 import java.lang.Exception
-import android.content.ContextWrapper
-import java.util.*
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.SystemClock
 import android.provider.Settings
 import android.util.Log
-import androidx.fragment.app.commit
-import androidx.fragment.app.replace
 import androidx.lifecycle.lifecycleScope
-import com.example.trackerapp.presentation.fragment.walk_list.WalkListFragment
 import com.example.trackerapp.services.LocationService
 import com.example.trackerapp.utils.PermissionsManager
 import kotlinx.coroutines.launch
-import java.io.FileInputStream
-import java.io.FileNotFoundException
-import java.text.SimpleDateFormat
-import java.time.Duration
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 class TrackerFragment :
@@ -53,14 +36,14 @@ class TrackerFragment :
             TrackerViewModel.Factory,
             FragmentTrackerBinding
             >() {
+
+    override val viewModelClass: KClass<TrackerViewModel> = TrackerViewModel::class
     @Inject
     lateinit var permissionsManager: PermissionsManager
-    override val viewModelClass: KClass<TrackerViewModel> = TrackerViewModel::class
     private lateinit var googleMap: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var userDistancePolyline: Polyline? = null
-    private var defaultUserLocationMarker: Marker? = null
-    private var imageName: String = ""
+    private var userLocationMapMarker: Marker? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -155,7 +138,7 @@ class TrackerFragment :
             Intent(requireContext(),
                 LocationService::class.java)
         )
-        removeDefaultUserLocationMapMarker()
+        removeUserLocationMapMarker()
         startTimeCounter()
         binding.trackerButton.setText(R.string.track_screen_stop_tracker_button_text)
     }
@@ -212,27 +195,27 @@ class TrackerFragment :
                 .addOnSuccessListener {
                     val currentUserLocation = LatLng(it.latitude, it.longitude)
                     moveMapCamera(currentUserLocation)
-                    showDefaultUserLocationMapMarker(currentUserLocation)
+                    showUserLocationMapMarker(currentUserLocation)
                 }
         }
     }
 
     private fun moveMapCamera(userLocation: LatLng) {
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 18F))
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15F))
     }
 
-    private fun showDefaultUserLocationMapMarker(userLocation: LatLng) {
-        if (defaultUserLocationMarker == null) {
-            defaultUserLocationMarker = googleMap.addMarker(MarkerOptions()
+    private fun showUserLocationMapMarker(userLocation: LatLng) {
+        if (userLocationMapMarker == null) {
+            userLocationMapMarker = googleMap.addMarker(MarkerOptions()
                 .position(userLocation)
                 .title("Marker in User Location"))
         }
     }
 
-    private fun removeDefaultUserLocationMapMarker() {
-        if (defaultUserLocationMarker != null) {
-            defaultUserLocationMarker?.remove()
-            defaultUserLocationMarker = null
+    private fun removeUserLocationMapMarker() {
+        if (userLocationMapMarker != null) {
+            userLocationMapMarker?.remove()
+            userLocationMapMarker = null
         }
     }
 
@@ -251,43 +234,6 @@ class TrackerFragment :
         if (userDistancePolyline != null) {
             userDistancePolyline?.remove()
             userDistancePolyline = null
-        }
-    }
-
-    //TODO Lets discuss the correct place for this logic
-    private fun saveMapImage(image: Bitmap) {
-        val cw = ContextWrapper(requireContext())
-        //TODO dir name to const
-        val directory = cw.getDir("profile", Context.MODE_APPEND)
-        if (!directory.exists()) {
-            directory.mkdir()
-        }
-
-        //TODO move name creating to separate method with using const instate magic strings
-        imageName = "map${Date().time}.png"
-        val mypath = File(directory, imageName)
-
-        //TODO = null is not needed. Use val
-        var fos: FileOutputStream? = null
-        try {
-            fos = FileOutputStream(mypath)
-            image.compress(Bitmap.CompressFormat.PNG, 100, fos)
-            fos.close()
-        } catch (e: Exception) {
-            Log.e("SAVE_IMAGE", e.message, e)
-        }
-    }
-
-    private fun getMapImage() {
-        try {
-            val cw = ContextWrapper(requireContext())
-            val path1 = cw.getDir("profile", Context.MODE_PRIVATE)
-            val f = File(path1, imageName)
-            val bitmap = BitmapFactory.decodeStream(FileInputStream(f))
-
-            //todo
-        } catch (e: FileNotFoundException) {
-            e.printStackTrace()
         }
     }
 }

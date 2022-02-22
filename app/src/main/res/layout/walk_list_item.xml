@@ -96,7 +96,7 @@
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/mapImageView"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="200dp"
         android:layout_marginTop="15dp"
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"
@@ -104,5 +104,4 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/Barrier"
         tools:src="@mipmap/ic_launcher" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>
