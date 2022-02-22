@@ -1,8 +1,8 @@
-package com.example.trackerapp.domain
+package com.example.trackerapp.domain.tracker
 
-import android.util.Log
-import com.example.trackerapp.data.repositories.UserLocationRepository
+import com.example.trackerapp.data.repositories.user_location.UserLocationRepository
 import com.example.trackerapp.entity.Result
+import com.example.trackerapp.entity.UserLocation
 import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDateTime
 import javax.inject.Inject
@@ -13,9 +13,11 @@ class InsertUserLocationInteractor @Inject constructor(
     private val getSpeed: GetSpeedInteractor
 ) {
     suspend operator fun invoke(latitude: Double, longitude: Double): Result<Unit> {
-        val distance = getIntermediateDistance(LatLng(latitude, longitude))
+        val location = LatLng(latitude, longitude)
+        val distance = getIntermediateDistance(location)
         val time = LocalDateTime.now()
         val speed = getSpeed(time)
-       return repository.insertUserLocation(latitude, longitude, distance, time, speed)
+        val userLocation = UserLocation(location, distance, time, speed)
+       return repository.insertUserLocation(userLocation)
     }
 }
