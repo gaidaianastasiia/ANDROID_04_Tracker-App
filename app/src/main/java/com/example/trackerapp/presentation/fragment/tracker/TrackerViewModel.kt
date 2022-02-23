@@ -6,10 +6,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.example.trackerapp.domain.tracker.DeleteAllUserLocationsInteractor
-import com.example.trackerapp.domain.tracker.GetAllUserLocationsInteractor
-import com.example.trackerapp.domain.tracker.GetAverageSpeedInteractor
-import com.example.trackerapp.domain.tracker.GetCoveredDistanceInteractor
+import com.example.trackerapp.domain.tracker.tracker_data.DeleteAllUserLocationsInteractor
+import com.example.trackerapp.domain.tracker.tracker_data.GetAllUserLocationsInteractor
+import com.example.trackerapp.domain.tracker.tracker_data.GetAverageSpeedInteractor
+import com.example.trackerapp.domain.tracker.tracker_data.GetCoveredDistanceInteractor
 import com.example.trackerapp.domain.walk.InsertWalkInteractor
 import com.example.trackerapp.entity.UserLocation
 import com.example.trackerapp.presentation.base.BaseViewModel

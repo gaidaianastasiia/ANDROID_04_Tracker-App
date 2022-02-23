@@ -1,6 +1,6 @@
-package com.example.trackerapp.domain.tracker.final_user_locations_data
+package com.example.trackerapp.domain.tracker.final_tracker_data
 
-import com.example.trackerapp.domain.tracker.GetStartTimeInteractor
+import com.example.trackerapp.domain.tracker.tracker_data.GetStartTimeInteractor
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId

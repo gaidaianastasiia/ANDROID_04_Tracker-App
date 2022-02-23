@@ -7,7 +7,6 @@ import androidx.fragment.app.commit
 import com.example.trackerapp.R
 import com.example.trackerapp.databinding.ActivityMainBinding
 import com.example.trackerapp.presentation.base.BaseActivity
-import com.example.trackerapp.presentation.fragment.tracker.TrackerFragment
 import com.example.trackerapp.presentation.fragment.walk_list.WalkListFragment
 import com.example.trackerapp.utils.PermissionsManager
 import javax.inject.Inject

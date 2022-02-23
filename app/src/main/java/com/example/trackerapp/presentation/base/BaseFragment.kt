@@ -4,12 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewbinding.ViewBinding
-import com.example.trackerapp.R
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
 import kotlin.reflect.KClass
@@ -19,25 +17,19 @@ abstract class BaseFragment<
         VMAF : ViewModelAssistedFactory<VM>,
         VB : ViewBinding
         > : DaggerFragment() {
+
     private var viewBinding: VB? = null
     protected val binding: VB
         get() = viewBinding ?: throw IllegalStateException("View binding is not initialized")
-
+    protected abstract val viewModelClass: KClass<VM>
     @Inject
     protected lateinit var viewModelAssistedFactory: VMAF
-
-    protected abstract val viewModelClass: KClass<VM>
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? = createViewBinding(inflater, container).also { viewBinding = it }.root
-
-    protected fun showErrorMessage() {
-        val message = getString(R.string.error_message)
-        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
-    }
 
     protected abstract fun createViewBinding(
         inflater: LayoutInflater,

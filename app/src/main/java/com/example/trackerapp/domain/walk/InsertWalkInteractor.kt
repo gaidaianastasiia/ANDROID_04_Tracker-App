@@ -3,9 +3,9 @@ package com.example.trackerapp.domain.walk
 import android.content.Context
 import android.graphics.Bitmap
 import com.example.trackerapp.data.repositories.walk.WalkRepository
-import com.example.trackerapp.domain.tracker.final_user_locations_data.GetFinalAverageSpeedInteractor
-import com.example.trackerapp.domain.tracker.final_user_locations_data.GetFinalDistanceInteractor
-import com.example.trackerapp.domain.tracker.final_user_locations_data.GetFinalTimeInteractor
+import com.example.trackerapp.domain.tracker.final_tracker_data.GetFinalAverageSpeedInteractor
+import com.example.trackerapp.domain.tracker.final_tracker_data.GetFinalDistanceInteractor
+import com.example.trackerapp.domain.tracker.final_tracker_data.GetFinalTimeInteractor
 import com.example.trackerapp.entity.NewWalk
 import com.example.trackerapp.entity.Result
 import com.example.trackerapp.utils.ImageManager

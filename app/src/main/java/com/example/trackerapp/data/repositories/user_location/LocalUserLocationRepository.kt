@@ -14,8 +14,10 @@ class LocalUserLocationRepository @Inject constructor(
 ) : UserLocationRepository {
     override suspend fun insertUserLocation(userLocation: UserLocation): Result<Unit> {
         return try {
-            val id = userLocationDao.insertUserLocation(userLocation.toUserLocationData())
-            if (id > 0) {
+            val insertUserLocationResult =
+                userLocationDao.insertUserLocation(userLocation.toUserLocationData())
+
+            if (insertUserLocationResult > 0) {
                 Result.Success(Unit)
             } else {
                 Result.Error(Exception("Insert was failed"))

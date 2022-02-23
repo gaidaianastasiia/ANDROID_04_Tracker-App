@@ -1,4 +1,4 @@
-package com.example.trackerapp.domain.tracker
+package com.example.trackerapp.domain.tracker.tracker_data
 
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.SphericalUtil

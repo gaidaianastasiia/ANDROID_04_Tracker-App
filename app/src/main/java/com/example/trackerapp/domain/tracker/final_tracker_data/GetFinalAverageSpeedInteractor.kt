@@ -1,6 +1,6 @@
-package com.example.trackerapp.domain.tracker.final_user_locations_data
+package com.example.trackerapp.domain.tracker.final_tracker_data
 
-import com.example.trackerapp.domain.tracker.GetStartTimeInteractor
+import com.example.trackerapp.domain.tracker.tracker_data.GetStartTimeInteractor
 import com.example.trackerapp.utils.DEFAULT_SPEED
 import com.example.trackerapp.utils.METERS_IN_KILOMETERS
 import com.example.trackerapp.utils.MINUTES_IN_HOUR

@@ -23,7 +23,6 @@ import java.lang.Exception
 import android.net.Uri
 import android.os.SystemClock
 import android.provider.Settings
-import android.util.Log
 import androidx.lifecycle.lifecycleScope
 import com.example.trackerapp.services.LocationService
 import com.example.trackerapp.utils.PermissionsManager
@@ -37,27 +36,18 @@ class TrackerFragment :
             FragmentTrackerBinding
             >() {
 
-    override val viewModelClass: KClass<TrackerViewModel> = TrackerViewModel::class
     @Inject
     lateinit var permissionsManager: PermissionsManager
-    private lateinit var googleMap: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var googleMap: GoogleMap? = null
     private var userDistancePolyline: Polyline? = null
     private var userLocationMapMarker: Marker? = null
+
+    override val viewModelClass: KClass<TrackerViewModel> = TrackerViewModel::class
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setClickListeners()
-        setObserve()
-        doWithLocationPermissions {
-            binding.trackerButton.isEnabled = true
-            startMapInitialization()
-        }
     }
 
     override fun createViewBinding(
@@ -65,6 +55,19 @@ class TrackerFragment :
         parent: ViewGroup?,
     ): FragmentTrackerBinding = FragmentTrackerBinding.inflate(inflater, parent, false)
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setClickListeners()
+        setObserve()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        doWithLocationPermissions {
+            binding.trackerButton.isEnabled = true
+            startMapInitialization()
+        }
+    }
 
     private fun setClickListeners() {
         binding.toolbar.setNavigationOnClickListener {
@@ -165,7 +168,7 @@ class TrackerFragment :
             }
         }
 
-        googleMap.snapshot(callback)
+        googleMap?.snapshot(callback)
     }
 
     private fun startTimeCounter() {
@@ -201,12 +204,12 @@ class TrackerFragment :
     }
 
     private fun moveMapCamera(userLocation: LatLng) {
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15F))
+        googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15F))
     }
 
     private fun showUserLocationMapMarker(userLocation: LatLng) {
         if (userLocationMapMarker == null) {
-            userLocationMapMarker = googleMap.addMarker(MarkerOptions()
+            userLocationMapMarker = googleMap?.addMarker(MarkerOptions()
                 .position(userLocation)
                 .title("Marker in User Location"))
         }
@@ -222,7 +225,7 @@ class TrackerFragment :
     private fun showUserDistanceMapPolyline(userLocations: List<UserLocation>) {
         if (userDistancePolyline != null) userDistancePolyline?.remove()
 
-        userDistancePolyline = googleMap.addPolyline(PolylineOptions().apply {
+        userDistancePolyline = googleMap?.addPolyline(PolylineOptions().apply {
             userLocations.forEach { add(it.location) }
             color(R.color.orange_200)
             width(9F)
