@@ -13,5 +13,4 @@ data class WalkData(
     @ColumnInfo(name = "time") val time: String,
     @ColumnInfo(name = "distance") val distance: String,
     @ColumnInfo(name = "speed") val speed: String,
-
 )

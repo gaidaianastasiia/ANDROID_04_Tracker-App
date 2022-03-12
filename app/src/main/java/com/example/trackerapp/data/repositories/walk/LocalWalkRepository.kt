@@ -14,8 +14,9 @@ class LocalWalkRepository @Inject constructor(
 ) : WalkRepository {
     override suspend fun insertWalk(newWalk: NewWalk): Result<Unit> {
         return try {
-            val insertedWalk = walkDao.insertWalk(newWalk.toWalkData())
-            if (insertedWalk > 0) {
+            val insertWalkResult = walkDao.insertWalk(newWalk.toWalkData())
+
+            if (insertWalkResult > 0) {
                 Result.Success(Unit)
             } else {
                 Result.Error(Exception("Insert was failed"))
@@ -40,8 +41,8 @@ class LocalWalkRepository @Inject constructor(
 
     override suspend fun deleteWalkList(idToDelete: Long): Result<Unit> {
         return try {
-            val deletedWalk = walkDao.delete(idToDelete)
-            if (deletedWalk > 0) {
+            val deleteWalkResult = walkDao.delete(idToDelete)
+            if (deleteWalkResult > 0) {
                 Result.Success(Unit)
             } else {
                 Result.Error(Exception("Delete Walk was failed"))

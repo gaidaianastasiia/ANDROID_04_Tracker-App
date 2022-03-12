@@ -1,4 +1,4 @@
-package com.example.trackerapp.domain.tracker.final_user_locations_data
+package com.example.trackerapp.domain.tracker.final_tracker_data
 
 import com.example.trackerapp.data.repositories.user_location.UserLocationRepository
 import com.example.trackerapp.utils.DEFAULT_DISTANCE

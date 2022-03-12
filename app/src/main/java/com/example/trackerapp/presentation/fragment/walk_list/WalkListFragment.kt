@@ -21,11 +21,11 @@ class WalkListFragment : BaseFragment<
         FragmentWalkListBinding,
         >(), WalksAdapter.OnItemClickListener {
 
-    private lateinit var adapter: WalksAdapter
-    override val viewModelClass: KClass<WalkListViewModel> = WalkListViewModel::class
-
     @Inject
     lateinit var imageManager: ImageManager
+    private lateinit var adapter: WalksAdapter
+
+    override val viewModelClass: KClass<WalkListViewModel> = WalkListViewModel::class
 
     override fun createViewBinding(
         inflater: LayoutInflater,

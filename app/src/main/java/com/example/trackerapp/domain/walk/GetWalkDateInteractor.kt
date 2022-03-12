@@ -1,6 +1,6 @@
 package com.example.trackerapp.domain.walk
 
-import com.example.trackerapp.domain.tracker.GetStartTimeInteractor
+import com.example.trackerapp.domain.tracker.tracker_data.GetStartTimeInteractor
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 

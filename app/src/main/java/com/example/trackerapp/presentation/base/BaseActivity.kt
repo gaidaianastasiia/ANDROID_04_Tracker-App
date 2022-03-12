@@ -10,7 +10,6 @@ import dagger.android.support.DaggerAppCompatActivity
 import javax.inject.Inject
 import kotlin.reflect.KClass
 
-//TODO remove dagger folder
 abstract class BaseActivity<
         VM : BaseViewModel,
         VMAF : ViewModelAssistedFactory<VM>,
