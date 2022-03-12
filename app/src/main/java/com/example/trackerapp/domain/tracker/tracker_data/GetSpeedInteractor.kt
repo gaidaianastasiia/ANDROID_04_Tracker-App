@@ -1,6 +1,6 @@
-package com.example.trackerapp.domain
+package com.example.trackerapp.domain.tracker.tracker_data
 
-import android.util.Log
+import com.example.trackerapp.utils.*
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
@@ -12,12 +12,12 @@ class GetSpeedInteractor @Inject constructor(
     suspend operator fun invoke(endPointTime: LocalDateTime): Double {
         val startPointTime = getLastUserLocation()?.time ?: endPointTime
         val timeIntervalInSeconds = ChronoUnit.SECONDS.between(startPointTime, endPointTime).toDouble()
-        val timeIntervalInHours = (timeIntervalInSeconds / 60) / 60
-        val distanceInMeters = getLastUserLocation()?.distance ?: 0.0
-        val distanceInKilometers = distanceInMeters / 1000
+        val timeIntervalInHours = (timeIntervalInSeconds / SECONDS_IN_MINUTE) / MINUTES_IN_HOUR
+        val distanceInMeters = getLastUserLocation()?.distance ?: DEFAULT_DISTANCE
+        val distanceInKilometers = distanceInMeters / METERS_IN_KILOMETERS
 
-        val result = if (distanceInKilometers == 0.0 || timeIntervalInHours == 0.0) {
-            0.00
+        val result = if (distanceInKilometers == DEFAULT_DISTANCE || timeIntervalInHours == DEFAULT_TIME) {
+            DEFAULT_SPEED
         } else {
             distanceInKilometers.div(timeIntervalInHours)
         }

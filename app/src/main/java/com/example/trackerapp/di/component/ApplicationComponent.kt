@@ -15,7 +15,9 @@ import javax.inject.Singleton
     ServiceModule::class,
     ViewModelFactoryModule::class,
     StorageModule::class,
-    RepositoryModule::class
+    RepositoryModule::class,
+    PermissionsManagerModule::class,
+    ImageManagerModule::class,
 ])
 @Singleton
 interface ApplicationComponent : AndroidInjector<Application> {

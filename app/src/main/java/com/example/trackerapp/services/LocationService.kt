@@ -1,6 +1,5 @@
-package com.example.trackerapp.presentation.fragment.tracker
+package com.example.trackerapp.services
 
-import android.annotation.SuppressLint
 import android.app.*
 import android.content.Context
 import android.content.Intent
@@ -9,16 +8,23 @@ import android.os.Build
 import android.os.Looper
 import android.util.Log
 import androidx.annotation.RequiresApi
-import com.example.trackerapp.domain.InsertUserLocationInteractor
+import com.example.trackerapp.domain.tracker.tracker_data.InsertUserLocationInteractor
+import com.example.trackerapp.presentation.base.CoroutineIntentService
 import com.google.android.gms.location.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-
+import com.example.trackerapp.R
+import com.example.trackerapp.utils.PermissionsManager
 import javax.inject.Inject
+
+private const val NOTIFICATION_CHANNEL_ID = "Location Service Id"
+private const val START_FOREGROUND_ID = 1
 
 class LocationService : CoroutineIntentService("LocationService") {
     @Inject
     lateinit var insertUserLocation: InsertUserLocationInteractor
+    @Inject
+    lateinit var permissionsManager: PermissionsManager
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationRequest: LocationRequest
     private lateinit var locationCallback: LocationCallback
@@ -26,7 +32,8 @@ class LocationService : CoroutineIntentService("LocationService") {
     override fun onCreate() {
         super.onCreate()
         val channelId =
-            createNotificationChannel("my_service", "My Background Service")
+            createNotificationChannel(NOTIFICATION_CHANNEL_ID,
+                getString(R.string.location_service_notification_channel_name))
 
         val notification: Notification = Notification.Builder(this, channelId)
             .setContentTitle("Title")
@@ -34,7 +41,7 @@ class LocationService : CoroutineIntentService("LocationService") {
             .setTicker("ticker_text")
             .build()
 
-        startForeground(1, notification)
+        startForeground(START_FOREGROUND_ID, notification)
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         createLocationRequest()
@@ -48,19 +55,19 @@ class LocationService : CoroutineIntentService("LocationService") {
 
                 launch(Dispatchers.IO) {
                     insertUserLocation(latitude, longitude)
-                        .doOnSuccess {
-
-                    }
                         .doOnError { error -> onStorageError(error) }
                 }
             }
         }
     }
 
-    @SuppressLint("MissingPermission")
+
     override fun onHandleIntent(intent: Intent?) {
         val looper = Looper.getMainLooper()
-        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, looper)
+
+        if(permissionsManager.isPermissionsGranted(this)) {
+            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, looper)
+        }
     }
 
     private fun createLocationRequest() {

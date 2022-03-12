@@ -1,6 +1,6 @@
-package com.example.trackerapp.domain
+package com.example.trackerapp.domain.tracker.tracker_data
 
-import com.example.trackerapp.data.repositories.UserLocationRepository
+import com.example.trackerapp.data.repositories.user_location.UserLocationRepository
 import com.example.trackerapp.entity.UserLocation
 import com.example.trackerapp.utils.toUserLocationList
 import kotlinx.coroutines.flow.Flow

@@ -4,6 +4,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">?attr/actionBarSize</item>
         <item name="android:background">@color/orange_500</item>
+        <item name="android:elevation">4dp</item>
     </style>
 
     <style name="TrackerScreenTrackingData">
@@ -17,6 +18,30 @@
     <style name="TrackerScreenTrackingDataLabel">
         <item name="android:textSize">10sp</item>
         <item name="android:textAlignment">center</item>
+        <item name="android:textColor">@color/grey_500</item>
+    </style>
+
+    <style name="TrackerScreenTrackerButton">
+        <item name="android:background">@drawable/tracker_button_background</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:enabled">true</item>
+    </style>
+
+    <style name="WalkListItemTitle">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/grey_700</item>
+        <item name="android:textFontWeight">700</item>
+        <item name="android:fontFamily">@font/main_font</item>
+    </style>
+
+    <style name="WalkListItemTrackingData">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/grey_700</item>
+    </style>
+
+    <style name="WalkListItemTrackingDataLabel">
+        <item name="android:textSize">12sp</item>
         <item name="android:textColor">@color/grey_500</item>
     </style>
 </resources>

@@ -1,6 +1,6 @@
-package com.example.trackerapp.domain
+package com.example.trackerapp.domain.tracker.tracker_data
 
-import com.example.trackerapp.data.repositories.UserLocationRepository
+import com.example.trackerapp.data.repositories.user_location.UserLocationRepository
 import java.time.LocalDateTime
 import javax.inject.Inject
 

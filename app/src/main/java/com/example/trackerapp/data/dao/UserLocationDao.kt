@@ -24,6 +24,9 @@ interface UserLocationDao {
     @Query("SELECT SUM(distance) from UserLocationData")
     fun getCoveredDistance(): Flow<Double?>
 
+    @Query("SELECT SUM(distance) from UserLocationData")
+    suspend fun getFinalDistance(): Double?
+
     @Query("SELECT MIN(time) from UserLocationData")
     suspend fun getStartTime(): LocalDateTime?
 

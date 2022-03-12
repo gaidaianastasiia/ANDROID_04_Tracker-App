@@ -1,10 +1,13 @@
 <resources>
     <string name="app_name">TrackerApp</string>
     <string name="error_message">Oops! Something went wrong</string>
+    <string name="retry_button">Retry</string>
+    <string name="empty_state_message">You haven\'t any walks yet</string>
 
     <string name="permission_rationale">Location permission is needed for core functionality</string>
     <string name="permission_denied_explanation">Permission was denied, but is needed for core functionality.</string>
-    <string name="permission_positive_button_text">OK</string>
+    <string name="permission_action_button_text">OK</string>
+    <string name="permission_dismiss_button_text">Dismiss</string>
 
     <string name="track_screen_time_divider">:</string>
     <string name="track_screen_time_label">TIME</string>
@@ -16,4 +19,13 @@
     <string name="track_screen_default_distance_value">0.0</string>
     <string name="track_screen_start_tracker_button_text">START</string>
     <string name="track_screen_stop_tracker_button_text">STOP</string>
+
+    <string name="walk_list_screen_start_walk_button_description">Start new walk button</string>
+
+    <string name="walk_list_item_time_label">Time</string>
+    <string name="walk_list_item_distance_label">Distance (m)</string>
+    <string name="walk_list_item_speed_label">Speed (km/h)</string>
+
+    <string name="location_service_notification_channel_name">Location Service</string>
+    <string name="insert_user_location_exception_message">Insert was failed</string>
 </resources>

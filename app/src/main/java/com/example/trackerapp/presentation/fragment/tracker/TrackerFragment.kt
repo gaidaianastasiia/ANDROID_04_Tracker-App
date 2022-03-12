@@ -1,21 +1,11 @@
 package com.example.trackerapp.presentation.fragment.tracker
 
-import android.Manifest
 import android.Manifest.permission.ACCESS_FINE_LOCATION
-import android.content.Context
-import android.content.Context.LOCATION_SERVICE
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.Color
-import android.location.Location
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.example.trackerapp.R
 import com.example.trackerapp.databinding.FragmentTrackerBinding
 import com.example.trackerapp.entity.UserLocation
@@ -26,29 +16,18 @@ import com.google.android.gms.maps.model.*
 import com.google.android.gms.maps.model.JointType.ROUND
 import com.google.android.material.snackbar.Snackbar
 import kotlin.reflect.KClass
-import android.widget.Toast
-
 import android.graphics.Bitmap
-
-import android.os.Environment
-
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.SnapshotReadyCallback
-import java.io.File
-import java.io.FileOutputStream
 import java.lang.Exception
-import android.content.ContextWrapper
-import java.util.*
-
-import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.SystemClock
-import android.widget.ImageView
-import java.io.FileInputStream
-import java.io.FileNotFoundException
-
-
-private val TAG = TrackerFragment::class.java.simpleName
-private const val REQUEST_PERMISSIONS_REQUEST_CODE = 34
+import android.provider.Settings
+import androidx.lifecycle.lifecycleScope
+import com.example.trackerapp.services.LocationService
+import com.example.trackerapp.utils.PermissionsManager
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class TrackerFragment :
     BaseFragment<
@@ -56,25 +35,19 @@ class TrackerFragment :
             TrackerViewModel.Factory,
             FragmentTrackerBinding
             >() {
-    override val viewModelClass: KClass<TrackerViewModel> = TrackerViewModel::class
-    lateinit var googleMap: GoogleMap
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+    @Inject
+    lateinit var permissionsManager: PermissionsManager
+    private var fusedLocationClient: FusedLocationProviderClient? = null
+    private var googleMap: GoogleMap? = null
     private var userDistancePolyline: Polyline? = null
-    private var defaultUserLocationMarker: Marker? = null
-    private var offset: Long? = null
-    private var imageName: String = ""
+    private var userLocationMapMarker: Marker? = null
+
+    override val viewModelClass: KClass<TrackerViewModel> = TrackerViewModel::class
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        binding.trackerButton.isEnabled = false
-        checkPermissions()
-        setClickListeners()
-        setObserve()
     }
 
     override fun createViewBinding(
@@ -82,49 +55,25 @@ class TrackerFragment :
         parent: ViewGroup?,
     ): FragmentTrackerBinding = FragmentTrackerBinding.inflate(inflater, parent, false)
 
-    private fun checkPermissions() {
-        when {
-            ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED -> {
-                binding.trackerButton.isEnabled = true
-                startMapInitialization()
-            }
-            shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
-
-                Snackbar.make(
-                    binding.trackerFragment,
-                    R.string.permission_rationale,
-                    Snackbar.LENGTH_INDEFINITE
-                )
-                    .setAction(R.string.permission_positive_button_text, {
-                        requestLocationPermission()
-                    })
-                    .show()
-            }
-            else -> {
-                requestLocationPermission()
-            }
-        }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setClickListeners()
+        setObserve()
     }
 
-    private fun requestLocationPermission() {
-        activityResultLauncher.launch(
-            arrayOf(ACCESS_FINE_LOCATION)
-        )
-    }
-
-    private val activityResultLauncher =
-        registerForActivityResult(
-            ActivityResultContracts.RequestMultiplePermissions())
-        { permissions ->
-            val isGranted = permissions.entries.all { it.value }
-            binding.trackerButton.isEnabled = isGranted
-            if (isGranted) startMapInitialization()
+    override fun onStart() {
+        super.onStart()
+        doWithLocationPermissions {
+            binding.trackerButton.isEnabled = true
+            startMapInitialization()
         }
+    }
 
     private fun setClickListeners() {
+        binding.toolbar.setNavigationOnClickListener {
+            parentFragmentManager.popBackStack()
+        }
+
         binding.trackerButton.setOnClickListener {
             viewModel.onTrackerButtonClick()
         }
@@ -143,54 +92,94 @@ class TrackerFragment :
             }
         }
 
-        viewModel.showCurrentSpeed.observe(viewLifecycleOwner) {
+        viewModel.currentSpeed.observe(viewLifecycleOwner) {
             binding.speedTextView.text = it.toString()
         }
 
-        viewModel.showCoveredDistance.observe(viewLifecycleOwner) {
+        viewModel.coveredDistance.observe(viewLifecycleOwner) {
             binding.distanceTextView.text = it.toString()
         }
 
-        viewModel.showAverageSpeed.observe(viewLifecycleOwner) {
+        viewModel.averageSpeed.observe(viewLifecycleOwner) {
             binding.averageSpeedTextView.text = it.toString()
+        }
+
+        viewModel.showLoader.observe(viewLifecycleOwner) { isLoaderVisible ->
+            showLoader(isLoaderVisible)
+        }
+    }
+
+    private fun doWithLocationPermissions(onPermissionResult: () -> Unit) {
+        lifecycleScope.launch {
+            when {
+                permissionsManager.requestPermissions(ACCESS_FINE_LOCATION) -> {
+                    onPermissionResult()
+                }
+                !shouldShowRequestPermissionRationale(ACCESS_FINE_LOCATION) -> {
+                    Snackbar.make(
+                        binding.trackerFragment,
+                        R.string.permission_rationale,
+                        Snackbar.LENGTH_LONG
+                    )
+                        .setAction(R.string.permission_action_button_text) {
+                            startActivity(Intent().apply {
+                                action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                                data = Uri.fromParts("package", requireContext().packageName, null)
+                            })
+                        }
+                        .show()
+                }
+            }
         }
     }
 
     private fun onFetchUserLocationsList(userLocationsList: List<UserLocation>) {
         if (userLocationsList.isNotEmpty()) {
             showUserDistanceMapPolyline(userLocationsList)
-            viewModel.getCoveredDistanceInMeters()
-            viewModel.getUserAverageSpeed()
             moveMapCamera(userLocationsList.last().location)
         }
     }
 
     private fun onStartTrackLocation() {
-        viewModel.requestList()
         requireActivity().startForegroundService(
             Intent(requireContext(),
                 LocationService::class.java)
         )
-        removeDefaultUserLocationMapMarker()
+        removeUserLocationMapMarker()
         startTimeCounter()
         binding.trackerButton.setText(R.string.track_screen_stop_tracker_button_text)
     }
 
     private fun onStopTrackLocation() {
-        takeMapSnapShot()
+        saveWalkData()
         requireActivity().stopService(Intent(requireContext(), LocationService::class.java))
-
         stopTimeCounter()
         removeUserDistanceMapPolyline()
         showCurrentUserLocation()
         binding.trackerButton.setText(R.string.track_screen_start_tracker_button_text)
     }
-    
+
+    private fun saveWalkData() {
+        val callback: SnapshotReadyCallback = object : SnapshotReadyCallback {
+            var walkMapImage: Bitmap? = null
+            override fun onSnapshotReady(snapshot: Bitmap?) {
+                walkMapImage = snapshot
+                try {
+                    viewModel.saveWalkData(requireContext(), walkMapImage)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+
+        googleMap?.snapshot(callback)
+    }
+
     private fun startTimeCounter() {
         binding.timeChronometer.base = SystemClock.elapsedRealtime()
         binding.timeChronometer.start()
     }
-    
+
     private fun stopTimeCounter() {
         binding.timeChronometer.stop()
         binding.timeChronometer.base = SystemClock.elapsedRealtime()
@@ -208,39 +197,41 @@ class TrackerFragment :
     }
 
     private fun showCurrentUserLocation() {
-        fusedLocationClient.lastLocation
-            .addOnSuccessListener {
-                val currentUserLocation = LatLng(it.latitude, it.longitude)
-                moveMapCamera(currentUserLocation)
-                showDefaultUserLocationMapMarker(currentUserLocation)
-            }
+        doWithLocationPermissions {
+            fusedLocationClient?.lastLocation
+                ?.addOnSuccessListener {
+                    val currentUserLocation = LatLng(it.latitude, it.longitude)
+                    moveMapCamera(currentUserLocation)
+                    showUserLocationMapMarker(currentUserLocation)
+                }
+        }
     }
 
     private fun moveMapCamera(userLocation: LatLng) {
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 18F))
+        googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15F))
     }
 
-    private fun showDefaultUserLocationMapMarker(userLocation: LatLng) {
-        if (defaultUserLocationMarker == null) {
-            defaultUserLocationMarker = googleMap.addMarker(MarkerOptions()
+    private fun showUserLocationMapMarker(userLocation: LatLng) {
+        if (userLocationMapMarker == null) {
+            userLocationMapMarker = googleMap?.addMarker(MarkerOptions()
                 .position(userLocation)
                 .title("Marker in User Location"))
         }
     }
 
-    private fun removeDefaultUserLocationMapMarker() {
-        if (defaultUserLocationMarker != null) {
-            defaultUserLocationMarker?.remove()
-            defaultUserLocationMarker = null
+    private fun removeUserLocationMapMarker() {
+        if (userLocationMapMarker != null) {
+            userLocationMapMarker?.remove()
+            userLocationMapMarker = null
         }
     }
 
     private fun showUserDistanceMapPolyline(userLocations: List<UserLocation>) {
         if (userDistancePolyline != null) userDistancePolyline?.remove()
 
-        userDistancePolyline = googleMap.addPolyline(PolylineOptions().apply {
+        userDistancePolyline = googleMap?.addPolyline(PolylineOptions().apply {
             userLocations.forEach { add(it.location) }
-            color(Color.BLUE)
+            color(R.color.orange_200)
             width(9F)
             jointType(ROUND)
         })
@@ -253,52 +244,7 @@ class TrackerFragment :
         }
     }
 
-    private fun takeMapSnapShot() {
-        val callback: SnapshotReadyCallback = object : SnapshotReadyCallback {
-            var bitmap: Bitmap? = null
-            override fun onSnapshotReady(snapshot: Bitmap?) {
-                bitmap = snapshot
-                try {
-                    bitmap?.let { saveMapImage(it) }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            }
-        }
-
-        googleMap.snapshot(callback)
-    }
-
-    private fun saveMapImage(image: Bitmap) {
-        val cw = ContextWrapper(requireContext())
-        val directory = cw.getDir("profile", Context.MODE_APPEND)
-        if (!directory.exists()) {
-            directory.mkdir()
-        }
-
-        imageName = "map${Date().time}.png"
-        val mypath = File(directory, imageName)
-
-        var fos: FileOutputStream? = null
-        try {
-            fos = FileOutputStream(mypath)
-            image.compress(Bitmap.CompressFormat.PNG, 100, fos)
-            fos.close()
-        } catch (e: Exception) {
-            Log.e("SAVE_IMAGE", e.message, e)
-        }
-    }
-
-    private fun getMapImage() {
-        try {
-            val cw = ContextWrapper(requireContext())
-            val path1 = cw.getDir("profile", Context.MODE_PRIVATE)
-            val f = File(path1, imageName)
-            val bitmap = BitmapFactory.decodeStream(FileInputStream(f))
-
-            //todo
-        } catch (e: FileNotFoundException) {
-            e.printStackTrace()
-        }
+    private fun showLoader(isLoaderVisible: Boolean) {
+        binding.progressBarLayout.visibility = if (isLoaderVisible) View.VISIBLE else View.GONE
     }
 }
