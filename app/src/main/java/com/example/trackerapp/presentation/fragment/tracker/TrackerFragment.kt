@@ -38,7 +38,7 @@ class TrackerFragment :
 
     @Inject
     lateinit var permissionsManager: PermissionsManager
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var fusedLocationClient: FusedLocationProviderClient? = null
     private var googleMap: GoogleMap? = null
     private var userDistancePolyline: Polyline? = null
     private var userLocationMapMarker: Marker? = null
@@ -92,16 +92,20 @@ class TrackerFragment :
             }
         }
 
-        viewModel.showCurrentSpeed.observe(viewLifecycleOwner) {
+        viewModel.currentSpeed.observe(viewLifecycleOwner) {
             binding.speedTextView.text = it.toString()
         }
 
-        viewModel.showCoveredDistance.observe(viewLifecycleOwner) {
+        viewModel.coveredDistance.observe(viewLifecycleOwner) {
             binding.distanceTextView.text = it.toString()
         }
 
-        viewModel.showAverageSpeed.observe(viewLifecycleOwner) {
+        viewModel.averageSpeed.observe(viewLifecycleOwner) {
             binding.averageSpeedTextView.text = it.toString()
+        }
+
+        viewModel.showLoader.observe(viewLifecycleOwner) { isLoaderVisible ->
+            showLoader(isLoaderVisible)
         }
     }
 
@@ -194,8 +198,8 @@ class TrackerFragment :
 
     private fun showCurrentUserLocation() {
         doWithLocationPermissions {
-            fusedLocationClient.lastLocation
-                .addOnSuccessListener {
+            fusedLocationClient?.lastLocation
+                ?.addOnSuccessListener {
                     val currentUserLocation = LatLng(it.latitude, it.longitude)
                     moveMapCamera(currentUserLocation)
                     showUserLocationMapMarker(currentUserLocation)
@@ -238,5 +242,9 @@ class TrackerFragment :
             userDistancePolyline?.remove()
             userDistancePolyline = null
         }
+    }
+
+    private fun showLoader(isLoaderVisible: Boolean) {
+        binding.progressBarLayout.visibility = if (isLoaderVisible) View.VISIBLE else View.GONE
     }
 }

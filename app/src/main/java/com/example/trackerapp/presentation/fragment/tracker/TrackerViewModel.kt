@@ -35,17 +35,17 @@ class TrackerViewModel @AssistedInject constructor(
     @AssistedFactory
     interface Factory : BaseViewModelAssistedFactory<TrackerViewModel>
 
-    private val _showCoveredDistance = MutableLiveData<Double>()
-    val showCoveredDistance: LiveData<Double>
-        get() = _showCoveredDistance
+    private val _coveredDistance = MutableLiveData<Double>()
+    val coveredDistance: LiveData<Double>
+        get() = _coveredDistance
 
-    private val _showAverageSpeed = MutableLiveData<Double>()
-    val showAverageSpeed: LiveData<Double>
-        get() = _showAverageSpeed
+    private val _averageSpeed = MutableLiveData<Double>()
+    val averageSpeed: LiveData<Double>
+        get() = _averageSpeed
 
-    private val _showCurrentSpeed = MutableLiveData<Double>()
-    val showCurrentSpeed: LiveData<Double>
-        get() = _showCurrentSpeed
+    private val _currentSpeed = MutableLiveData<Double>()
+    val currentSpeed: LiveData<Double>
+        get() = _currentSpeed
 
     private val _startTrackUserLocation = MutableLiveData<Boolean>()
     val startTrackUserLocation: LiveData<Boolean>
@@ -54,6 +54,10 @@ class TrackerViewModel @AssistedInject constructor(
     private val _userLocationsList = MutableLiveData<List<UserLocation>>()
     val userLocationsList: LiveData<List<UserLocation>>
         get() = _userLocationsList
+
+    private val _showLoader = MutableLiveData<Boolean>()
+    val showLoader: LiveData<Boolean>
+        get() = _showLoader
 
     private var isUserLocationTracking =
         savedStateHandle.get(TRACK_STATE_SAVED_STATE_HANDLE_KEY) ?: false
@@ -108,7 +112,7 @@ class TrackerViewModel @AssistedInject constructor(
         coveredDistanceJob = viewModelScope.launch {
             getCoveredDistance()
                 .collect {
-                    _showCoveredDistance.value = it
+                    _coveredDistance.value = it
                 }
         }
     }
@@ -116,23 +120,25 @@ class TrackerViewModel @AssistedInject constructor(
     private fun handleUserAverageSpeed() {
         averageSpeedJob = viewModelScope.launch {
             getAverageSpeed().collect {
-                _showAverageSpeed.value = it
+                _averageSpeed.value = it
             }
         }
     }
 
     private fun handleCurrentSpeed(userLocationsList: List<UserLocation>) {
-        _showCurrentSpeed.value = userLocationsList.last().speed
+        _currentSpeed.value = userLocationsList.last().speed
     }
 
     private fun setStopTrackLocationState() {
         _startTrackUserLocation.value = false
+        _showLoader.value = true
         savedStateHandle.set(TRACK_STATE_SAVED_STATE_HANDLE_KEY, false)
     }
 
     private suspend fun stopTrackLocation() {
+        _showLoader.value = false
         isUserLocationTracking = false
-        _showCurrentSpeed.value = 0.0
+        _currentSpeed.value = 0.0
         userLocationsJob?.cancel()
         coveredDistanceJob?.cancel()
         averageSpeedJob?.cancel()
