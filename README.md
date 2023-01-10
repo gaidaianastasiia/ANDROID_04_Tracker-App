@@ -4,6 +4,9 @@ Tracker App is a user location tracking app.
 ## Screenshots
 ![Screenshots](https://github.com/gaidaianastasiia/ANDROID_04_Tracker-App/blob/master/screenshots/screenshots.png)
 
+## Features
+This app contains two screens: walk list screen and walk screen. You can track your walk on the map and get additional walk data such as time, distance, current and average speed. After you finish tracking a walk, the information about it is stored in the walk list. You can delete your existing walks.
+
 ## Used technologies
 1. Kotlin
 2. Clean Architecture
