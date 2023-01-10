@@ -2,7 +2,7 @@
 Tracking the user's walking single activity application.  
 
 ## Screenshots
-![Screenshots](https://github.com/gaidaianastasiia/Android_05_News-App/blob/master/screenshots/Screenshots.png)
+![Screenshots](https://github.com/gaidaianastasiia/ANDROID_04_Tracker-App/blob/master/screenshots/screenshots.png)
 
 Were used:
 - Clean Architecture
