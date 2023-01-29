@@ -12,7 +12,7 @@ This app contains two screens: walk list screen and walk screen. You can track y
 2. Clean Architecture
 3. Single Activity Architecture
 4. Model-View-ViewModel Pattern
-5. Google Maps SDK
+5. Google Map API
 6. Location API
 7. Service
 8. Dagger 2
